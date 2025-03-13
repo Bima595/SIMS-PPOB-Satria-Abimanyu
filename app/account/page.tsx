@@ -13,23 +13,22 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!token) {
-      console.log("No token available, trying to fetch user profile...");
-      fetchUserProfile()
-        .then(() => setIsLoading(false))
-        .catch(() => {
-          console.log("Failed to fetch profile, redirecting to login...");
-          router.push("/auth/login");
-        });
-    } else {
-      setIsLoading(false);
+      console.log("No token available, redirecting to login...");
+      router.push("/auth/login");
+      return;
     }
+
+    // If there's a token, fetch the user profile
+    console.log("Token available, trying to fetch user profile...");
+    fetchUserProfile()
+      .then(() => setIsLoading(false))
+      .catch(() => {
+        console.log("Failed to fetch profile, redirecting to login...");
+        router.push("/auth/login");
+      });
   }, [token, router, fetchUserProfile]);
 
   if (isLoading) {
-    return null;
-  }
-
-  if (!token) {
     return null;
   }
 

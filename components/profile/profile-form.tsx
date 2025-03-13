@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Profile } from '@/lib/api/profile';
 import ProfileImage from './profile-image';
-import { toast } from 'sonner';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface ProfileFormProps {
   profile: Profile;
@@ -58,6 +59,7 @@ export default function ProfileForm({
 
   return (
     <div className="max-w-md mx-auto p-4">
+      <ToastContainer />
       <ProfileImage
         imageUrl={profile.profile_image || '/dashboard/Profile Photo.png'}
         onImageUpload={onUploadImage}
