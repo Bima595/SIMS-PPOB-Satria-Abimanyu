@@ -9,7 +9,6 @@ interface ConfirmationModalProps {
 }
 
 export function ConfirmationModal({
-  serviceName,
   amount,
   onConfirm,
   onCancel,

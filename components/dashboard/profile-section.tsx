@@ -11,77 +11,71 @@ export default function ProfileSection() {
   const [profileImage, setProfileImage] = useState(defaultProfileImage);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Cek token dulu sebelum mengambil profil
+  // Load profile when token is available
   useEffect(() => {
     if (token) {
       const loadProfile = async () => {
         try {
+          setIsLoading(true);
           await fetchUserProfile();
         } finally {
           setIsLoading(false);
         }
       };
+      
       loadProfile();
     } else {
       setIsLoading(false);
     }
   }, [token, fetchUserProfile]);
 
+  // Update profile image when user data changes
   useEffect(() => {
     if (user?.profile_image) {
       setProfileImage(user.profile_image);
     } else {
       setProfileImage(defaultProfileImage);
     }
-  }, [user, fetchUserProfile]);
-
-  // **Jangan ubah token**, hanya simpan token baru jika berubah
-  useEffect(() => {
-    const prevToken = localStorage.getItem("auth_token");
-    if (token && token !== prevToken) {
-      localStorage.setItem("auth_token", token);
-      fetchUserProfile();
-    }
-  }, [token, fetchUserProfile]);
+  }, [user]);
 
   const handleImageError = () => {
     setProfileImage(defaultProfileImage);
   };
 
-  if (!isAuthenticated || !token) {
+  if (!isAuthenticated && !token) {
     return null;
+  }
+
+  // Enhanced skeleton loader for profile section
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-left mb-8">
+        <div className="w-20 h-20 mb-4 overflow-hidden rounded-full border border-gray-300 bg-gray-200 animate-pulse" />
+        <div className="text-left space-y-2">
+          <div className="h-4 bg-gray-200 animate-pulse w-24 rounded" />
+          <div className="h-6 bg-gray-200 animate-pulse w-48 rounded" />
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col items-left mb-8">
       <div className="w-20 h-20 mb-4 overflow-hidden rounded-full border border-gray-300">
-        {!isLoading ? (
-          <Image
-            src={profileImage}
-            alt="Profile"
-            width={80}
-            height={80}
-            className="object-cover w-full h-full rounded-full"
-            onError={handleImageError}
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-200 animate-pulse rounded-full" />
-        )}
+        <Image
+          src={profileImage}
+          alt="Profile"
+          width={80}
+          height={80}
+          className="object-cover w-full h-full rounded-full"
+          onError={handleImageError}
+        />
       </div>
       <div className="text-left">
-        {!isLoading ? (
-          <>
-            <p className="text-gray-600">Selamat datang,</p>
-            <h2 className="text-2xl font-bold text-gray-900">
-              {user?.first_name} {user?.last_name}
-            </h2>
-          </>
-        ) : (
-          <>
-            <div className="h-4 bg-gray-200 animate-pulse w-24 mb-2" />
-            <div className="h-6 bg-gray-200 animate-pulse w-48" />
-          </>
-        )}
+        <p className="text-gray-600">Selamat datang,</p>
+        <h2 className="text-2xl font-bold text-gray-900">
+          {user?.first_name} {user?.last_name}
+        </h2>
       </div>
     </div>
   );

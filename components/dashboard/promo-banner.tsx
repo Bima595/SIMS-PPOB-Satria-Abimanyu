@@ -15,23 +15,16 @@ export default function PromoBanner() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-
-  useEffect(() => {
-    if (token && isAuthenticated) {
-      setRefreshTrigger((prev) => prev + 1);
-    }
-  }, [token, isAuthenticated]);
 
   useEffect(() => {
     async function fetchBanners() {
-      if (!token || !isAuthenticated) return;
+      if (!token) return;
 
       try {
         setLoading(true);
         const data = await getBanners(token);
         setBanners(data);
+        setError("");
       } catch (err) {
         console.error("Error fetching banners:", err);
         setError(err instanceof Error ? err.message : "Failed to load promotions");
@@ -40,16 +33,25 @@ export default function PromoBanner() {
       }
     }
 
-    fetchBanners();
-  }, [token, isAuthenticated, refreshTrigger]); 
+    if (token) {
+      fetchBanners();
+    }
+  }, [token]);
 
+  if (!isAuthenticated && !token) {
+    return null;
+  }
+
+  // Enhanced skeleton loader with proper structure
   if (loading) {
     return (
       <div>
         <h2 className="text-lg font-semibold mb-4">Temukan promo menarik</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="animate-pulse bg-gray-200 rounded-lg h-40"></div>
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 rounded-lg h-40 w-full"></div>
+            </div>
           ))}
         </div>
       </div>
@@ -60,7 +62,7 @@ export default function PromoBanner() {
     return (
       <div>
         <h2 className="text-lg font-semibold mb-4">Temukan promo menarik</h2>
-        <div className="text-red-500 text-center py-4">
+        <div className="text-red-500 text-center py-4 border border-red-100 rounded-lg bg-red-50">
           <p>{error}</p>
           <button
             onClick={() => window.location.reload()}

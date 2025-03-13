@@ -38,8 +38,37 @@ export function AuthProvider({
     isAuthenticated: false,
   });
 
+  // Initialize auth state on mount
+  useEffect(() => {
+    const storedToken = getCookie('token') || localStorage.getItem('token');
+    
+    if (typeof storedToken === 'string' && storedToken) {
+      // Set token in state immediately to prevent race conditions
+      setAuthState(prev => ({
+        ...prev,
+        token: storedToken,
+        isAuthenticated: true
+      }));
+      
+      const storedUser = localStorage.getItem('user');
+      if (storedUser && storedUser !== 'undefined') { 
+        try {
+          const user = JSON.parse(storedUser);
+          setAuthState(prev => ({
+            ...prev,
+            user,
+            token: storedToken,
+            isAuthenticated: true,
+          }));
+        } catch (error) {
+          localStorage.removeItem('user');
+        }
+      }
+    }
+  }, []);
+
   /**
-   * Logout function (dideklarasikan dulu sebelum `fetchUserProfile`)
+   * Logout function
    */
   const logout = useCallback((): void => {
     setCookie('token', '');
@@ -59,7 +88,7 @@ export function AuthProvider({
    * Fetch user profile from the API
    */
   const fetchUserProfile = useCallback(async (): Promise<void> => {
-    const token = getCookie('token') || localStorage.getItem('token');
+    const token = authState.token || getCookie('token') || localStorage.getItem('token');
     if (!token) return;
 
     try {
@@ -72,35 +101,22 @@ export function AuthProvider({
       setAuthState((prev) => ({
         ...prev,
         user: profile as User,
+        token: token, // Ensure token is always in sync
         isAuthenticated: true,
       }));
       localStorage.setItem('user', JSON.stringify(transformedProfile));
     } catch (error) {
+      console.error('Error fetching profile:', error);
       logout();
     }
-  }, [logout]);
+  }, [logout, authState.token]);
 
+  // Fetch user profile when token changes but user is null
   useEffect(() => {
-    const token = getCookie('token') || localStorage.getItem('token');
-
-    if (typeof token === 'string') {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser && storedUser !== 'undefined') { 
-        try {
-          const user = JSON.parse(storedUser);
-          setAuthState({
-            user,
-            token,
-            isAuthenticated: true,
-          });
-        } catch (error) {
-          localStorage.removeItem('user');
-        }
-      } else {
-        fetchUserProfile();
-      }
+    if (authState.token && !authState.user) {
+      fetchUserProfile();
     }
-  }, [fetchUserProfile]);
+  }, [authState.token, authState.user, fetchUserProfile]);
 
   /**
    * Login function

@@ -14,29 +14,38 @@ export default function ServiceGrid() {
 
   useEffect(() => {
     async function fetchServices() {
-      if (!token || !isAuthenticated) return;
+      if (!token) return;
 
       try {
         setLoading(true);
         const data = await getServices(token);
         setServices(data);
+        setError("");
       } catch (err) {
+        console.error("Error fetching services:", err);
         setError(err instanceof Error ? err.message : "Failed to load services");
       } finally {
         setLoading(false);
       }
     }
 
-    fetchServices();
-  }, [token, isAuthenticated]);
+    if (token) {
+      fetchServices();
+    }
+  }, [token]);
 
+  if (!isAuthenticated && !token) {
+    return null;
+  }
+
+  // Enhanced skeleton loader with better structure
   if (loading) {
     return (
       <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-4 mb-8">
         {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className="animate-pulse flex flex-col items-center">
-            <div className="bg-gray-200 w-12 h-12 rounded-md mb-2"></div>
-            <div className="bg-gray-200 h-4 w-16 rounded"></div>
+          <div key={i} className="flex flex-col items-center p-2">
+            <div className="animate-pulse bg-gray-200 w-12 h-12 rounded-md mb-2"></div>
+            <div className="animate-pulse bg-gray-200 h-4 w-16 rounded"></div>
           </div>
         ))}
       </div>
@@ -45,7 +54,7 @@ export default function ServiceGrid() {
 
   if (error) {
     return (
-      <div className="text-red-500 text-center py-4">
+      <div className="text-red-500 text-center py-4 border border-red-100 rounded-lg bg-red-50">
         <p>{error}</p>
         <button
           onClick={() => window.location.reload()}

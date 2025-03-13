@@ -4,7 +4,7 @@ import Header from '@/components/dashboard/header';
 import ProfileSection from '@/components/dashboard/profile-section';
 import BalanceCard from '@/components/dashboard/balance-card';
 import ServiceGrid from '@/components/dashboard/service-grid';
-import PromoBanner from '@/components/dashboard/promo.banner';
+import PromoBanner from '@/components/dashboard/promo-banner';
 
 export default async function Dashboard() {
   const cookieStore = await cookies(); // Tambahkan await di sini

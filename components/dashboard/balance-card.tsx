@@ -16,28 +16,32 @@ export default function BalanceCard() {
     let intervalId: NodeJS.Timeout;
 
     async function fetchBalance() {
-      if (!token || !isAuthenticated) return;
+      if (!token) return;
 
       try {
+        setLoading(true);
         const balanceData = await getBalance(token);
         setBalance(balanceData);
         setError('');
       } catch (err) {
+        console.error('Balance fetch error:', err);
         setError(err instanceof Error ? err.message : 'Failed to load balance');
       } finally {
         setLoading(false);
       }
     }
 
-    if (isAuthenticated) {
+    if (token) {
       fetchBalance();
       intervalId = setInterval(fetchBalance, 10000);
     }
 
-    return () => clearInterval(intervalId);
-  }, [token, isAuthenticated]);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [token]);
 
-  if (!user) return null;
+  if (!isAuthenticated && !token) return null;
 
   const toggleBalance = () => {
     setShowBalance(!showBalance);
@@ -51,15 +55,27 @@ export default function BalanceCard() {
     }).format(amount);
   };
 
+  // Skeleton loader for the balance card
+  if (loading) {
+    return (
+      <div
+        className="text-white rounded-lg p-6 mb-8 relative overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: "url('/dashboard/Background Saldo.png')" }}
+      >
+        <h3 className="text-lg font-medium mb-2">Saldo anda</h3>
+        <div className="animate-pulse h-10 w-44 bg-white bg-opacity-20 rounded mb-4"></div>
+        <div className="animate-pulse h-6 w-32 bg-white bg-opacity-20 rounded"></div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="text-white rounded-lg p-6 mb-8 relative overflow-hidden bg-cover bg-center"
       style={{ backgroundImage: "url('/dashboard/Background Saldo.png')" }}
     >
       <h3 className="text-lg font-medium mb-2">Saldo anda</h3>
-      {loading ? (
-        <div className="animate-pulse h-8 w-32 bg-white bg-opacity-20 rounded mb-4"></div>
-      ) : error ? (
+      {error ? (
         <div className="text-sm mb-4">
           <p>{error}</p>
           <button
