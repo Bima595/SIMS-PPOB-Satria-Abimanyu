@@ -6,8 +6,9 @@ import BalanceCard from '@/components/dashboard/balance-card';
 import ServiceGrid from '@/components/dashboard/service-grid';
 import PromoBanner from '@/components/dashboard/promo.banner';
 
-export default function Dashboard() {
-  const token = cookies().get('token')?.value;
+export default async function Dashboard() {
+  const cookieStore = await cookies(); // Tambahkan await di sini
+  const token = cookieStore.get('token')?.value;
 
   if (!token) {
     redirect('/auth/login');
