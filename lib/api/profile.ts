@@ -43,7 +43,6 @@ export async function getProfile(): Promise<Profile> {
     throw new Error("No token found")
   }
 
-  console.log("Fetching profile with token:", token)
 
   const response = await fetch(`${BASE_URL}/profile`, {
     headers: {
@@ -54,11 +53,9 @@ export async function getProfile(): Promise<Profile> {
   const data = await response.json()
 
   if (!response.ok) {
-    console.error("Profile error:", data)
     throw new Error(data.message || "Failed to fetch profile")
   }
 
-  console.log("Profile response:", data)
   return data.data
 }
 
@@ -68,7 +65,6 @@ export async function updateProfile(request: UpdateProfileRequest): Promise<Upda
     throw new Error("No token found")
   }
 
-  console.log("Updating profile with token:", token)
 
   const response = await fetch(`${BASE_URL}/profile/update`, {
     method: "PUT",
@@ -82,11 +78,9 @@ export async function updateProfile(request: UpdateProfileRequest): Promise<Upda
   const data = await response.json()
 
   if (!response.ok) {
-    console.error("Update profile error:", data)
     throw new Error(data.message || "Failed to update profile")
   }
 
-  console.log("Update profile response:", data)
   return data
 }
 
@@ -100,8 +94,6 @@ export async function uploadProfileImage(file: File): Promise<UploadImageRespons
     if (file.size > 100 * 1024) {
       throw new Error("Image size exceeds maximum limit of 100KB")
     }
-  
-    console.log("Uploading profile image with token:", token)
   
     const formData = new FormData()
     formData.append("file", file)
@@ -117,10 +109,7 @@ export async function uploadProfileImage(file: File): Promise<UploadImageRespons
     const data = await response.json()
   
     if (!response.ok) {
-      console.error("Upload profile image error:", data)
       throw new Error(data.message || "Failed to upload profile image")
     }
-  
-    console.log("Upload profile image response:", data)
     return data
   }

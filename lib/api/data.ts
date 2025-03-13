@@ -60,7 +60,6 @@ export async function getServices(token: string): Promise<Service[]> {
     throw new Error("No token found")
   }
 
-  console.log("Fetching services with token:", token)
 
   const response = await fetch(`${BASE_URL}/services`, {
     headers: {
@@ -71,11 +70,9 @@ export async function getServices(token: string): Promise<Service[]> {
   const data = await response.json()
 
   if (!response.ok) {
-    console.error("Services error:", data)
     throw new Error(data.message || "Failed to fetch services")
   }
 
-  console.log("Services response:", data)
   return data.data
 }
 
@@ -84,7 +81,6 @@ export async function getBanners(token: string): Promise<Banner[]> {
     throw new Error("No token found")
   }
 
-  console.log("Fetching banners with token:", token)
 
   const response = await fetch(`${BASE_URL}/banner`, {
     headers: {
@@ -95,11 +91,9 @@ export async function getBanners(token: string): Promise<Banner[]> {
   const data = await response.json()
 
   if (!response.ok) {
-    console.error("Banners error:", data)
     throw new Error(data.message || "Failed to fetch banners")
   }
 
-  console.log("Banners response:", data)
   return data.data
 }
 
@@ -110,7 +104,6 @@ export async function getBalance(token: string): Promise<number> {
     throw new Error("No token found")
   }
 
-  console.log("Fetching balance with token:", token)
 
   const response = await fetch(`${BASE_URL}/balance`, {
     headers: {
@@ -121,11 +114,9 @@ export async function getBalance(token: string): Promise<number> {
   const data = await response.json()
 
   if (!response.ok) {
-    console.error("Balance error:", data)
     throw new Error(data.message || "Failed to fetch balance")
   }
 
-  console.log("Balance response:", data)
   return data.data.balance
 }
 
@@ -135,7 +126,6 @@ export async function createTransaction(request: TransactionRequest): Promise<Tr
     throw new Error("No token found")
   }
 
-  console.log("Creating transaction with token:", token)
 
   const response = await fetch(`${BASE_URL}/transaction`, {
     method: "POST",
@@ -149,11 +139,9 @@ export async function createTransaction(request: TransactionRequest): Promise<Tr
   const data = await response.json()
 
   if (!response.ok) {
-    console.error("Transaction error:", data)
     throw new Error(data.message || "Failed to create transaction")
   }
 
-  console.log("Transaction response:", data)
   return data
 }
 
@@ -166,7 +154,6 @@ export async function getTransactionHistory(
     throw new Error("No token found")
   }
 
-  console.log(`Fetching transaction history with offset: ${offset}, limit: ${limit}`)
 
   const response = await fetch(`${BASE_URL}/transaction/history?offset=${offset}&limit=${limit}`, {
     headers: {
@@ -175,10 +162,8 @@ export async function getTransactionHistory(
   })
 
   const data: TransactionHistoryResponse = await response.json()
-  console.log("Transaction history response:", data)
 
   if (!response.ok || data.status !== 0) {
-    console.error("Transaction history error:", data)
     throw new Error(data.message || "Failed to fetch transaction history")
   }
 

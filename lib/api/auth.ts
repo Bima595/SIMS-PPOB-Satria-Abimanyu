@@ -22,7 +22,6 @@ export async function loginUser(loginDto: LoginDto): Promise<ApiResponse> {
     }
     return data
   } catch (error) {
-    console.error("Login error:", error)
     throw new Error("Failed to login")
   }
 }
@@ -58,7 +57,6 @@ export async function registerUser({
     const data = await response.json()
     return data
   } catch (error) {
-    console.error("Registration error:", error)
     throw new Error("Failed to register")
   }
 }
@@ -79,7 +77,6 @@ export async function getUserProfile(token: string): Promise<ApiResponse> {
     const data = await response.json()
     return data
   } catch (error) {
-    console.error("Get profile error:", error)
     throw new Error("Failed to get user profile")
   }
 }

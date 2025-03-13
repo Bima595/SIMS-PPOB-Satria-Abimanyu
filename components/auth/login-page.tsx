@@ -48,13 +48,34 @@ export default function LoginPage() {
 
     try {
       const response = await loginUser(validationResult.data!);
-
+    
       if (response.status === 0) {
         setCookie('token', response.data.token, { path: '/' });
-
+    
         localStorage.setItem('user', JSON.stringify(response.data.profile));
-
-        router.push('/dashboard');
+    
+        // Cek apakah sudah pernah reload sebelumnya
+        const hasReloaded = localStorage.getItem('hasReloaded');
+    
+        if (!hasReloaded) {
+          // Tandai bahwa reload sudah dilakukan
+          localStorage.setItem('hasReloaded', 'true');
+    
+          // Reload halaman sebanyak 3 kali
+          let reloadCount = 0;
+          const reloadInterval = setInterval(() => {
+            if (reloadCount < 3) {
+              window.location.reload();
+              reloadCount++;
+            } else {
+              clearInterval(reloadInterval);
+              router.push('/dashboard');
+            }
+          }, 1000); // Reload setiap 1 detik
+        } else {
+          // Jika sudah pernah reload, langsung arahkan ke dashboard
+          router.push('/dashboard');
+        }
       } else {
         if (
           response.message &&
@@ -85,7 +106,7 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row bg-white">

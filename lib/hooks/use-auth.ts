@@ -76,18 +76,15 @@ export function AuthProvider({
       }));
       localStorage.setItem('user', JSON.stringify(transformedProfile));
     } catch (error) {
-      console.error('Failed to fetch profile:', error);
-      logout(); // Menggunakan logout yang sudah di dalam useCallback
+      logout();
     }
-  }, [logout]); // ✅ Menambahkan `logout` sebagai dependensi
+  }, [logout]);
 
   useEffect(() => {
     const token = getCookie('token') || localStorage.getItem('token');
-    console.log('Token on mount:', token);
 
     if (typeof token === 'string') {
       const storedUser = localStorage.getItem('user');
-      console.log('Stored user:', storedUser);
       if (storedUser && storedUser !== 'undefined') { 
         try {
           const user = JSON.parse(storedUser);
@@ -97,7 +94,6 @@ export function AuthProvider({
             isAuthenticated: true,
           });
         } catch (error) {
-          console.error('Error parsing stored user:', error);
           localStorage.removeItem('user');
         }
       } else {

@@ -24,8 +24,6 @@ export async function topUp(request: TopUpRequest): Promise<TopUpResponse> {
     throw new Error("No token found");
   }
 
-  console.log("Processing top up with token:", token);
-
   const response = await fetch(`${BASE_URL}/topup`, {
     method: "POST",
     headers: {
@@ -38,10 +36,8 @@ export async function topUp(request: TopUpRequest): Promise<TopUpResponse> {
   const data = await response.json();
 
   if (!response.ok) {
-    console.error("Top up error:", data);
     throw new Error(data.message || "Failed to process top up");
   }
 
-  console.log("Top up response:", data);
   return data;
 }
