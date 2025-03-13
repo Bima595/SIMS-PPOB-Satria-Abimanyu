@@ -2,15 +2,19 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 
+// Menentukan __dirname untuk ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Inisialisasi FlatCompat
 const compat = new FlatCompat({
   baseDirectory: __dirname,
+  resolvePluginsRelativeTo: __dirname, // Opsional, membantu jika ada plugin eksternal
 });
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+// ESLint Configuration
+export default [
+  ...compat.extends("next/core-web-vitals", "next"), // HAPUS ARRAY BERSARANG
   {
     files: ["**/*.tsx", "**/*.ts"],
     languageOptions: {
@@ -18,7 +22,7 @@ const eslintConfig = [
         ecmaVersion: "latest",
         sourceType: "module",
         ecmaFeatures: {
-          jsx: true, // Enable JSX parsing
+          jsx: true, // Aktifkan parsing JSX
         },
       },
     },
@@ -28,5 +32,3 @@ const eslintConfig = [
     },
   },
 ];
-
-export default eslintConfig;

@@ -25,16 +25,15 @@ export default function ProfileSection() {
     } else {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [token, fetchUserProfile]);
 
-  // Update gambar profil setelah profil di-fetch
   useEffect(() => {
     if (user?.profile_image) {
       setProfileImage(user.profile_image);
     } else {
       setProfileImage(defaultProfileImage);
     }
-  }, [user]);
+  }, [user, fetchUserProfile]);
 
   // **Jangan ubah token**, hanya simpan token baru jika berubah
   useEffect(() => {
@@ -43,7 +42,7 @@ export default function ProfileSection() {
       localStorage.setItem("auth_token", token);
       fetchUserProfile();
     }
-  }, [token]);
+  }, [token, fetchUserProfile]);
 
   const handleImageError = () => {
     setProfileImage(defaultProfileImage);

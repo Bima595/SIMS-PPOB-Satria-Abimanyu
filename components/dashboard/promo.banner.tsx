@@ -17,7 +17,7 @@ export default function PromoBanner() {
   const [error, setError] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Trigger refresh when token or authentication state changes
+
   useEffect(() => {
     if (token && isAuthenticated) {
       setRefreshTrigger((prev) => prev + 1);
@@ -41,7 +41,7 @@ export default function PromoBanner() {
     }
 
     fetchBanners();
-  }, [refreshTrigger]); // Refresh data when trigger changes
+  }, [token, isAuthenticated, refreshTrigger]); 
 
   if (loading) {
     return (

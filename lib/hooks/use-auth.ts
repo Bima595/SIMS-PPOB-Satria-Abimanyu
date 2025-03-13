@@ -5,6 +5,7 @@ import {
   useEffect,
   createContext,
   useContext,
+  useCallback,
   type ReactNode,
 } from 'react';
 import { useRouter } from 'next/navigation';
@@ -37,6 +38,49 @@ export function AuthProvider({
     isAuthenticated: false,
   });
 
+  /**
+   * Logout function (dideklarasikan dulu sebelum `fetchUserProfile`)
+   */
+  const logout = useCallback((): void => {
+    setCookie('token', '');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    setAuthState({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+    });
+
+    router.push('/auth/login');
+  }, [router]);
+
+  /**
+   * Fetch user profile from the API
+   */
+  const fetchUserProfile = useCallback(async (): Promise<void> => {
+    const token = getCookie('token') || localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const profile = await getProfile();
+      const transformedProfile = {
+        ...profile,
+        profile_image: profile.profile_image ?? undefined,
+      };
+
+      setAuthState((prev) => ({
+        ...prev,
+        user: profile as User,
+        isAuthenticated: true,
+      }));
+      localStorage.setItem('user', JSON.stringify(transformedProfile));
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+      logout(); // Menggunakan logout yang sudah di dalam useCallback
+    }
+  }, [logout]); // ✅ Menambahkan `logout` sebagai dependensi
+
   useEffect(() => {
     const token = getCookie('token') || localStorage.getItem('token');
     console.log('Token on mount:', token);
@@ -60,38 +104,12 @@ export function AuthProvider({
         fetchUserProfile();
       }
     }
-  }, []);
-
-  /**
-   * Fetch user profile from the API
-   */
-  const fetchUserProfile = async (): Promise<void> => {
-    const token = getCookie('token') || localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-      const profile = await getProfile();
-      const transformedProfile = {
-        ...profile,
-        profile_image: profile.profile_image ?? undefined,
-      };
-
-      setAuthState((prev) => ({
-        ...prev,
-        user: profile as User,
-        isAuthenticated: true,
-      }));
-      localStorage.setItem('user', JSON.stringify(transformedProfile));
-    } catch (error) {
-      console.error('Failed to fetch profile:', error);
-      logout();
-    }
-  };
+  }, [fetchUserProfile]);
 
   /**
    * Login function
    */
-  const login = (token: string, user: User): void => {
+  const login = useCallback((token: string, user: User): void => {
     setCookie('token', token);
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
@@ -101,36 +119,19 @@ export function AuthProvider({
       token,
       isAuthenticated: true,
     });
-  };
-
-  /**
-   * Logout function
-   */
-  const logout = (): void => {
-    setCookie('token', '');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-
-    setAuthState({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-    });
-
-    router.push('/auth/login');
-  };
+  }, []);
 
   /**
    * Update user function
    */
-  const updateUser = (user: User): void => {
+  const updateUser = useCallback((user: User): void => {
     localStorage.setItem('user', JSON.stringify(user));
 
     setAuthState((prev) => ({
       ...prev,
       user,
     }));
-  };
+  }, []);
 
   const value = {
     ...authState,

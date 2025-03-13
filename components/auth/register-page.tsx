@@ -12,7 +12,7 @@ import { Input } from '../../components/ui/input';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 import { type RegisterDto, RegisterDtoSchema } from '../../lib/dto/auth.dto';
 import { validateDto, getFirstError } from '../../lib/validation/validate';
-import Image from "next/image";
+import Image from 'next/image';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -297,9 +297,11 @@ export default function RegisterPage() {
 
       <div className="hidden md:flex md:flex-1 bg-pink-50 items-center justify-center">
         <div className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8">
-          <img
+          <Image
             src="/auth/Illustrasi Login.png"
             alt="SIMS PPOB Illustration"
+            width={500}
+            height={300}
             className="w-full h-auto object-contain"
           />
         </div>

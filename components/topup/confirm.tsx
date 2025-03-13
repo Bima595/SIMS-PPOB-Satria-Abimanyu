@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from "next/image";
 
 interface ConfirmationModalProps {
   serviceName: string;
@@ -17,7 +18,7 @@ export function ConfirmationModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-120 h-75 flex flex-col justify-center items-center text-center">
         <div className="flex justify-center mb-4">
-          <img src="/dashboard/Logo.png" alt="Icon" className="w-12 h-12" />
+          <Image src="/dashboard/Logo.png" alt="Icon" className="w-12 h-12" />
         </div>
 
         <p className="text-gray-700">Anda yakin untuk Top Up sebesar</p>
