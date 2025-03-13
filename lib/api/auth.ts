@@ -17,6 +17,9 @@ export async function loginUser(loginDto: LoginDto): Promise<ApiResponse> {
     })
 
     const data = await response.json()
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+    }
     return data
   } catch (error) {
     console.error("Login error:", error)
@@ -80,4 +83,3 @@ export async function getUserProfile(token: string): Promise<ApiResponse> {
     throw new Error("Failed to get user profile")
   }
 }
-

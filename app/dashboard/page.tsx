@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import Header from '@/components/dashboard/header';
 import ProfileSection from '@/components/dashboard/profile-section';
 import BalanceCard from '@/components/dashboard/balance-card';
@@ -5,6 +7,12 @@ import ServiceGrid from '@/components/dashboard/service-grid';
 import PromoBanner from '@/components/dashboard/promo.banner';
 
 export default function Dashboard() {
+  const token = cookies().get('token')?.value;
+
+  if (!token) {
+    redirect('/auth/login');
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -17,9 +25,7 @@ export default function Dashboard() {
             <BalanceCard />
           </div>
         </div>
-        
         <ServiceGrid />
-        
         <PromoBanner />
       </main>
     </div>

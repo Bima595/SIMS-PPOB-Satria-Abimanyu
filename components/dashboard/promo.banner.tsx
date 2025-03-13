@@ -15,18 +15,22 @@ export default function PromoBanner() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Trigger refresh when token or authentication state changes
+  useEffect(() => {
+    if (token && isAuthenticated) {
+      setRefreshTrigger((prev) => prev + 1);
+    }
+  }, [token, isAuthenticated]);
 
   useEffect(() => {
     async function fetchBanners() {
-      if (!token || !isAuthenticated) {
-        console.log("No token available or not authenticated");
-        return;
-      }
+      if (!token || !isAuthenticated) return;
 
       try {
         setLoading(true);
         const data = await getBanners(token);
-        console.log("Fetched banners:", data);
         setBanners(data);
       } catch (err) {
         console.error("Error fetching banners:", err);
@@ -37,7 +41,7 @@ export default function PromoBanner() {
     }
 
     fetchBanners();
-  }, [token, isAuthenticated]);
+  }, [refreshTrigger]); // Refresh data when trigger changes
 
   if (loading) {
     return (
@@ -62,7 +66,7 @@ export default function PromoBanner() {
             onClick={() => window.location.reload()}
             className="mt-2 text-sm text-red-600 hover:text-red-700 underline"
           >
-            Try again
+            Coba lagi
           </button>
         </div>
       </div>

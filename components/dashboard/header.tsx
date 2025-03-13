@@ -37,13 +37,13 @@ export default function Header() {
                 isMenuOpen ? 'block' : 'hidden'
               } absolute top-16 right-0 bg-white shadow-md w-full md:relative md:top-0 md:shadow-none md:flex md:items-center md:space-x-4 md:w-auto`}
             >
-              <Link href="/dashboard/topup" className="block py-2 px-4 text-gray-700 hover:text-red-600">
+              <Link href="/topup" className="block py-2 px-4 text-gray-700 hover:text-red-600">
                 Top Up
               </Link>
               <Link href="/transaction" className="block py-2 px-4 text-gray-700 hover:text-red-600">
                 Transaction
               </Link>
-              <Link href="/dashboard/account" className="block py-2 px-4 text-gray-700 hover:text-red-600">
+              <Link href="/account" className="block py-2 px-4 text-gray-700 hover:text-red-600">
                 Akun
               </Link>
             </div>

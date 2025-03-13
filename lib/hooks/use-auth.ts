@@ -10,8 +10,8 @@ import {
 import { useRouter } from 'next/navigation';
 import type { AuthState, User } from '../types';
 import React from 'react';
-import { getCookie } from 'cookies-next';
-import { getProfile } from '../api/data';
+import { getCookie, setCookie } from 'cookies-next';
+import { getProfile } from '../api/profile';
 
 interface AuthContextType extends AuthState {
   login: (token: string, user: User) => void;
@@ -38,10 +38,12 @@ export function AuthProvider({
   });
 
   useEffect(() => {
-    const token = getCookie('token');
+    const token = getCookie('token') || localStorage.getItem('token');
+    console.log('Token on mount:', token);
 
     if (typeof token === 'string') {
       const storedUser = localStorage.getItem('user');
+      console.log('Stored user:', storedUser);
       if (storedUser) {
         try {
           const user = JSON.parse(storedUser);
@@ -64,17 +66,22 @@ export function AuthProvider({
    * Fetch user profile from the API
    */
   const fetchUserProfile = async (): Promise<void> => {
-    const token = getCookie('token');
+    const token = getCookie('token') || localStorage.getItem('token');
     if (!token) return;
 
     try {
       const profile = await getProfile();
+      const transformedProfile = {
+        ...profile,
+        profile_image: profile.profile_image ?? undefined,
+      };
+
       setAuthState((prev) => ({
         ...prev,
-        user: profile,
+        user: profile as User,
         isAuthenticated: true,
       }));
-      localStorage.setItem('user', JSON.stringify(profile));
+      localStorage.setItem('user', JSON.stringify(transformedProfile));
     } catch (error) {
       console.error('Failed to fetch profile:', error);
       logout();
@@ -85,6 +92,7 @@ export function AuthProvider({
    * Login function
    */
   const login = (token: string, user: User): void => {
+    setCookie('token', token);
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
 
@@ -99,6 +107,7 @@ export function AuthProvider({
    * Logout function
    */
   const logout = (): void => {
+    setCookie('token', '');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
