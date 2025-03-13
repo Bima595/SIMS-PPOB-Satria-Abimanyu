@@ -19,10 +19,8 @@ export default function ServiceGrid() {
       try {
         setLoading(true);
         const data = await getServices(token);
-        console.log("Fetched services:", data);
         setServices(data);
       } catch (err) {
-        console.error("Error fetching services:", err);
         setError(err instanceof Error ? err.message : "Failed to load services");
       } finally {
         setLoading(false);

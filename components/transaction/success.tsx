@@ -23,7 +23,7 @@ export function SuccessModal({ serviceName, amount, onClose }: SuccessModalProps
 
         <button
           onClick={onClose}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          className="px-4 py-2 text-red-600 hover:text-red-700 font-semibold rounded hover:bg-red-50"
         >
           Kembali ke Beranda
         </button>
