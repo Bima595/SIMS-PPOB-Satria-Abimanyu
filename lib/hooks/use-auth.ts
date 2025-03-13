@@ -44,7 +44,7 @@ export function AuthProvider({
     if (typeof token === 'string') {
       const storedUser = localStorage.getItem('user');
       console.log('Stored user:', storedUser);
-      if (storedUser) {
+      if (storedUser && storedUser !== 'undefined') { 
         try {
           const user = JSON.parse(storedUser);
           setAuthState({
