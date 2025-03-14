@@ -11,7 +11,7 @@ import {
 import { useRouter } from 'next/navigation';
 import type { AuthState, User } from '../types';
 import React from 'react';
-import { getCookie, setCookie } from 'cookies-next';
+import { getCookie } from 'cookies-next';
 import { getProfile } from '../api/profile';
 
 interface AuthContextType extends AuthState {
@@ -23,6 +23,48 @@ interface AuthContextType extends AuthState {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Define the setCookie function (replace with your actual setCookie implementation)
+function setCookie(name: string, value: string, options: any = {}) {
+  options = {
+    path: "/",
+    ...options,
+  }
+
+  if (options.expires instanceof Date) {
+    options.expires = options.expires.toUTCString()
+  }
+
+  let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value)
+
+  for (const optionKey in options) {
+    updatedCookie += "; " + optionKey
+    const optionValue = options[optionKey]
+    if (optionValue !== true) {
+      updatedCookie += "=" + optionValue
+    }
+  }
+
+  document.cookie = updatedCookie
+}
+
+
+type SetAuthState = (newState: AuthState) => void
+
+let _setAuthState: SetAuthState | null = null
+
+export const initializeSetAuthState = (setAuthState: SetAuthState) => {
+  _setAuthState = setAuthState
+}
+
+const setAuthState = (newState: AuthState) => {
+  if (_setAuthState) {
+    _setAuthState(newState)
+  } else {
+    console.warn("setAuthState not initialized. Call initializeSetAuthState first.")
+  }
+}
+
 
 /**
  * Auth Provider Component
@@ -157,16 +199,17 @@ export function AuthProvider({
    * Login function
    */
   const login = useCallback((token: string, user: User): void => {
-    setCookie('token', token);
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
-
+    // Set token in both cookie and localStorage for redundancy
+    setCookie("token", token)
+    localStorage.setItem("token", token)
+    localStorage.setItem("user", JSON.stringify(user))
+  
     setAuthState({
       user,
       token,
       isAuthenticated: true,
-    });
-  }, []);
+    })
+  }, [])
 
   /**
    * Update user function

@@ -14,7 +14,7 @@ interface ProfileFormProps {
     first_name: string;
     last_name: string;
   }) => Promise<void>;
-  onUploadImage: (file: File) => Promise<void>;
+  onUploadImage: (file: File) => Promise<any>;
   onLogout: () => void;
 }
 

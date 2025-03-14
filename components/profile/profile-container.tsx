@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { getProfile, updateProfile, uploadProfileImage } from "@/lib/api/profile"
+import { getProfile, updateProfile, uploadProfileImage, getToken } from "@/lib/api/profile"
 import ProfileForm from "./profile-form"
 import Cookies from "js-cookie"
 import { toast } from "sonner"
@@ -17,6 +17,14 @@ export default function ProfileContainer() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        // Check if token exists before making the API call
+        const token = getToken()
+        if (!token) {
+          console.error("No token found")
+          router.push("/auth/login")
+          return
+        }
+
         const profileData = await getProfile()
         setProfile(profileData)
       } catch (err) {
@@ -38,7 +46,7 @@ export default function ProfileContainer() {
     try {
       await updateProfile(data)
 
-      setProfile((prev:any) => {
+      setProfile((prev: any) => {
         if (!prev) return null
 
         return {
@@ -55,24 +63,57 @@ export default function ProfileContainer() {
 
   const handleUploadImage = async (file: File) => {
     try {
+      if (file.size > 100 * 1024) {
+        const error = new Error("File size exceeds 100KB limit")
+        error.name = "FileSizeError"
+        throw error
+      }
+
       const response = await uploadProfileImage(file)
 
-      setProfile((prev:any) => {
+      // Create a new profile object instead of modifying the existing one
+      setProfile((prev) => {
         if (!prev) return null
+
+        const updatedImage = `${response.data.profile_image}${response.data.profile_image.includes("?") ? "&" : "?"}t=${Date.now()}`
 
         return {
           ...prev,
-          profile_image: response.data.profile_image,
+          profile_image: updatedImage,
         }
       })
+
+      // Force a re-render after a short delay to ensure the image is updated
+      setTimeout(() => {
+        setProfile((currentProfile) => {
+          if (!currentProfile) return null
+          return { ...currentProfile }
+        })
+      }, 100)
+
+      return response
     } catch (error) {
       console.error("Error uploading image:", error)
+
+      if (error instanceof Error && error.name === "FileSizeError") {
+        toast.error("Gambar terlalu besar! Maksimum 100KB", {
+          duration: 5000,
+        })
+      } else {
+        toast.error("Gagal mengunggah gambar. Silakan coba lagi.", {
+          duration: 5000,
+        })
+      }
+
       throw error
     }
   }
 
   const handleLogout = () => {
+    // Clear token from both cookie and localStorage
     Cookies.remove("token")
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
     router.push("/auth/login")
     toast.success("Berhasil logout")
   }

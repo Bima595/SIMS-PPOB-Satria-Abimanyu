@@ -1,6 +1,8 @@
 import Cookies from "js-cookie"
+
 export function getToken(): string | undefined {
-  return Cookies.get("token")
+  // Check both cookie and localStorage for the token
+  return Cookies.get("token") || (typeof window !== 'undefined' ? localStorage.getItem("token") || undefined : undefined);
 }
 
 const BASE_URL = "https://take-home-test-api.nutech-integrasi.com";
