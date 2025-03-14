@@ -19,11 +19,30 @@ export default function ServiceGrid() {
       try {
         setLoading(true);
         const data = await getServices(token);
-        setServices(data);
-        setError("");
+        
+        // Periksa apakah data adalah array
+        if (Array.isArray(data)) {
+          setServices(data);
+        } else if (data && typeof data === 'object') {
+          // Jika data adalah objek yang memiliki properti array (misalnya data.services)
+          // Periksa properti umum seperti 'data', 'services', 'items', dll.
+          const serviceArray = data.data || data.services || data.items || [];
+          if (Array.isArray(serviceArray)) {
+            setServices(serviceArray);
+          } else {
+            console.error("Unexpected API response structure:", data);
+            setError("Invalid data format received from API");
+            setServices([]);
+          }
+        } else {
+          console.error("Unexpected API response:", data);
+          setError("Invalid data format received from API");
+          setServices([]);
+        }
       } catch (err) {
         console.error("Error fetching services:", err);
         setError(err instanceof Error ? err.message : "Failed to load services");
+        setServices([]);
       } finally {
         setLoading(false);
       }
@@ -62,6 +81,15 @@ export default function ServiceGrid() {
         >
           Try again
         </button>
+      </div>
+    );
+  }
+
+  // Jika services kosong, tampilkan pesan
+  if (!services.length) {
+    return (
+      <div className="text-center py-4 border border-gray-100 rounded-lg bg-gray-50">
+        <p className="text-gray-500">No services available</p>
       </div>
     );
   }

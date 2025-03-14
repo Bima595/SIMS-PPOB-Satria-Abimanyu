@@ -106,7 +106,7 @@ export default function RegisterPage() {
                   <Input
                     type="email"
                     name="email"
-                    placeholder="wallet@nutech.com"
+                    placeholder="masukan email anda"
                     value={formData.email}
                     onChange={handleChange}
                     className={`pl-10 h-10 sm:h-11 text-sm sm:text-base text-gray-700${
@@ -129,7 +129,7 @@ export default function RegisterPage() {
                   <Input
                     type="text"
                     name="first_name"
-                    placeholder="Kristanto"
+                    placeholder="nama depan"
                     value={formData.first_name}
                     onChange={handleChange}
                     className={`pl-10 h-10 sm:h-11 text-sm sm:text-base text-gray-700${
@@ -154,7 +154,7 @@ export default function RegisterPage() {
                   <Input
                     type="text"
                     name="last_name"
-                    placeholder="Wibowo"
+                    placeholder="nama belakang"
                     value={formData.last_name}
                     onChange={handleChange}
                     className={`pl-10 h-10 sm:h-11 text-sm sm:text-base text-gray-700${
@@ -191,7 +191,7 @@ export default function RegisterPage() {
                   <Input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
-                    placeholder="password"
+                    placeholder="buat password"
                     value={formData.password}
                     onChange={handleChange}
                     className={`pl-10 pr-10 h-10 sm:h-11 text-sm sm:text-base text-gray-700 ${

@@ -55,25 +55,26 @@ export interface TransactionHistoryResponse {
 }
 
 
-export async function getServices(token: string): Promise<Service[]> {
-  if (!token) {
-    throw new Error("No token found")
-  }
+export async function getServices(token?: string) {
+  const effectiveToken = token || 
+                        localStorage.getItem("token") || 
+                        document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
 
+  if (!effectiveToken) {
+    throw new Error("No authentication token available");
+  }
 
   const response = await fetch(`${BASE_URL}/services`, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${effectiveToken}`,
     },
-  })
-
-  const data = await response.json()
+  });
 
   if (!response.ok) {
-    throw new Error(data.message || "Failed to fetch services")
+    throw new Error(`Failed to fetch services: ${response.status}`);
   }
 
-  return data.data
+  return await response.json();
 }
 
 export async function getBanners(token: string): Promise<Banner[]> {
@@ -120,29 +121,30 @@ export async function getBalance(token: string): Promise<number> {
   return data.data.balance
 }
 
-export async function createTransaction(request: TransactionRequest): Promise<TransactionResponse> {
-  const token = getToken()
-  if (!token) {
-    throw new Error("No token found")
-  }
+export async function createTransaction(data: any, token?: string) {
+  // Gunakan token yang diberikan atau coba ambil dari localStorage/cookie
+  const effectiveToken = token || 
+                        localStorage.getItem("token") || 
+                        document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
 
+  if (!effectiveToken) {
+    throw new Error("No authentication token available");
+  }
 
   const response = await fetch(`${BASE_URL}/transaction`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${effectiveToken}`,
     },
-    body: JSON.stringify(request),
-  })
-
-  const data = await response.json()
+    body: JSON.stringify(data),
+  });
 
   if (!response.ok) {
-    throw new Error(data.message || "Failed to create transaction")
+    throw new Error(`Transaction failed: ${response.status}`);
   }
 
-  return data
+  return await response.json();
 }
 
 export async function getTransactionHistory(

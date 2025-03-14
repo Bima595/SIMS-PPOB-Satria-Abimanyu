@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 });
 
 // ESLint Configuration
-export default [
+const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next"), // HAPUS ARRAY BERSARANG
   {
     files: ["**/*.tsx", "**/*.ts"],
@@ -32,3 +32,5 @@ export default [
     },
   },
 ];
+
+export default eslintConfig;

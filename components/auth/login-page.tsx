@@ -124,7 +124,7 @@ export default function LoginPage() {
                   <Input
                     type="email"
                     name="email"
-                    placeholder="wallet@nutech.com"
+                    placeholder="masukkan email anda"
                     value={formData.email}
                     onChange={handleChange}
                     className={`pl-10 h-10 sm:h-11 text-sm sm:text-base text-gray-700 ${
