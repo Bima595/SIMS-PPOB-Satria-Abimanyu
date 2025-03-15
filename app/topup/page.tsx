@@ -2,8 +2,17 @@ import Header from "@/components/dashboard/header"
 import ProfileSection from "@/components/dashboard/profile-section"
 import BalanceCard from "@/components/dashboard/balance-card"
 import TopUpForm from "@/components/topup/top-up-form"
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function TopUp() {
+export default async function TopUp() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+  
+    if (!token) {
+      redirect('/auth/login');
+    }
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
